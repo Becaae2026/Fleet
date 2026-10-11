@@ -106,7 +106,10 @@ dialog header{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:
 .fields h3{grid-column:1/-1;margin:6px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:4px}
 .fields label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
 .fields .file{font-size:11px}
-.fields .hint{grid-column:1/-1;font-size:12px;color:var(--muted);margin:0}
+.fields .docf{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.fields .docf b{color:var(--fg);font-size:12px}
+.fields .docf .cur{font-size:11px;color:var(--muted)}
+.fields .docf input[type=file]{font-size:11px;padding:4px}
 dialog footer{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
 dialog footer .r{display:flex;gap:8px;margin-left:auto}
 .err{color:var(--bad);font-size:12px;padding:0 18px;margin:0 0 8px}
@@ -177,7 +180,8 @@ dialog footer .r{display:flex;gap:8px;margin-left:auto}
     <label>Designation<input id="f-designation" list="desigs"></label>
     <label>Civil ID no.<input id="f-civilNo" inputmode="numeric"></label>
     <label>Remarks<input id="f-remarks"></label>
-    <p class="hint">Expiry dates and files for Daftar, Insurance, Civil ID and Driving Licence are managed from their tiles on the Dashboard.</p>
+    <h3>Documents · expiry dates and files (PDF or photo, up to 10 MB)</h3>
+    <div id="docfields" style="display:contents"></div>
   </div>
   <p class="err" id="dlg-err" hidden></p>
   <footer><div class="r"><button type="button" class="btn" id="dlg-cancel">Cancel</button><button type="submit" class="btn primary" id="dlg-save">Save</button></div></footer>
@@ -259,7 +263,7 @@ function render(){
     const files=ROWS.filter(r=>relevant(r,d)&&r[d.f]).length;
     return`<button class="tile doctile" data-tile="${d.k}" aria-pressed="${sel===d.k}" type="button"><span class="lab">Document</span><h3>${d.l}</h3>
       <span class="stats">${pill("bad",c.bad+" expired")}${pill("warn",c.warn+" due ≤30d")}${pill("ok",c.ok+" valid")}${c.idle?pill("idle",c.idle+" no date"):""}</span>
-      <span class="foot"><span>${files} of ${g.length} files uploaded</span><span class="go">Edit dates &amp; files ›</span></span></button>`}).join("");
+      <span class="foot"><span>${files} of ${g.length} files uploaded</span><span class="go">View documents ›</span></span></button>`}).join("");
   renderPanel();
   const depts=[...new Set(ROWS.map(r=>r.dept).filter(Boolean))].sort();const max=Math.max(1,...depts.map(dp=>ROWS.filter(r=>r.dept===dp).length));
   $("bydept").innerHTML=depts.map(dp=>{const n=ROWS.filter(r=>r.dept===dp).length;return`<div class="barrow"><span>${esc(dp)}</span><div class="track"><i style="width:${n/max*100}%;background:var(--bright)"></i></div><b>${n}</b></div>`}).join("")||'<span class="muted">No vehicles.</span>';
@@ -284,11 +288,10 @@ function renderPanel(){
     head:["Document","Registration No.","Vehicle model","Year","Owner","Designation","Department","Civil ID No.","Expiry date","Days left","Status"],
     rows:list.map(x=>[x.d.s,x.r.reg,x.r.model,x.r.year,x.r.owner,x.r.designation,x.r.dept,x.r.civilNo,fmt(x.date),x.n,sevTxt(x.n)])};
   p.innerHTML=`<h2>${head} <span>${sub} · ${list.length} documents</span><button class="btn sm xp" data-export type="button"${list.length?"":" disabled"}>Export to Excel</button></h2>
-   <div class="tablewrap"><table><thead><tr><th>Document</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th><th>Expiry date</th><th>Status</th><th>File</th><th></th></tr></thead><tbody>
+   <div class="tablewrap"><table><thead><tr><th>Document</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th><th>Expiry date</th><th>Status</th><th>File</th></tr></thead><tbody>
    ${list.length?list.map(x=>`<tr><td><b>${x.d.s}</b></td><td><span class="plate">${esc(x.r.reg)}</span></td><td>${esc(title(x.r.model))}</td><td>${ownerCell(x.r)}</td><td>${esc(x.r.dept)}</td>
-     <td class="num">${fmt(x.date)}</td><td>${pill(sev(x.n),sevTxt(x.n))}</td><td>${fileBtns(x.r,x.d)||'<span class="muted">No file</span>'}</td>
-     <td class="act"><button class="btn sm" data-tile="${x.d.k}" type="button">Update</button></td></tr>`).join("")
-     :`<tr><td colspan="9" class="empty">${sel==="expired"?"No expired documents.":"Nothing is due in this period."}</td></tr>`}</tbody></table></div>`;
+     <td class="num">${fmt(x.date)}</td><td>${pill(sev(x.n),sevTxt(x.n))}</td><td>${fileBtns(x.r,x.d)||'<span class="muted">No file</span>'}</td></tr>`).join("")
+     :`<tr><td colspan="8" class="empty">${sel==="expired"?"No expired documents.":"Nothing is due in this period."}</td></tr>`}</tbody></table></div>`;
 }
 function renderDocPanel(d){
   const rows=ROWS.filter(r=>relevant(r,d)).map(r=>({r,n:days(r[d.k])}))
@@ -299,17 +302,15 @@ function renderDocPanel(d){
     head:["S.No","Registration No.","Vehicle model","Year","Owner","Designation","Department","Civil ID No.",`${d.s} expiry`,"Days left","Status","File uploaded"],
     rows:rows.map(({r,n})=>[r.sno,r.reg,r.model,r.year,r.owner,r.designation,r.dept,r.civilNo,fmt(r[d.k]),n,sevTxt(n),r[d.f]?"Yes":"No"])};
   const chips=[["all","All"],["bad","Expired"],["due","Due ≤90 days"],["ok","Valid"],["idle","No date"]];
-  $("panel").innerHTML=`<h2>${d.l} <span>Change a date and press Save · upload PDF or photo up to 10 MB</span><button class="btn sm xp" data-export type="button"${rows.length?"":" disabled"}>Export to Excel</button></h2>
+  $("panel").innerHTML=`<h2>${d.l} <span>View and download only · to change dates or files use Vehicles › Edit</span><button class="btn sm xp" data-export type="button"${rows.length?"":" disabled"}>Export to Excel</button></h2>
    <div class="ptools"><input type="search" id="pq" value="${esc(pq)}" placeholder="Search plate, owner${civ?", Civil ID":""}" aria-label="Search">
      <div class="chips">${chips.map(([k,l])=>`<button class="chip" data-chip="${k}" aria-pressed="${chip===k}" type="button">${l}</button>`).join("")}</div></div>
    <div class="tablewrap"><table><thead><tr><th>#</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th>${civ?"<th>Civil ID no.</th>":""}<th>Expiry date</th><th>Status</th><th>Document file</th></tr></thead><tbody>
    ${rows.length?rows.map(({r,n})=>`<tr><td class="num">${esc(r.sno)}</td><td><span class="plate">${esc(r.reg)}</span></td><td>${esc(title(r.model))}<span class="sub">${esc(r.year)}</span></td>
      <td>${ownerCell(r)}</td><td>${esc(r.dept)}</td>${civ?`<td class="num">${esc(r.civilNo||"—")}</td>`:""}
-     <td><div class="datebox"><input type="date" class="dt" id="dt-${r.row}" value="${esc(r[d.k])}" data-orig="${esc(r[d.k])}" aria-label="${esc(d.s)} expiry for ${esc(r.reg)}">
-       <button class="btn sm primary" id="sv-${r.row}" data-savedate="${r.row}|${d.k}" type="button" hidden>Save</button></div></td>
+     <td class="num">${fmt(r[d.k])}</td>
      <td>${pill(sev(n),sevTxt(n))}</td>
-     <td>${r[d.f]?`${fileBtns(r,d)}<button class="lnk" data-up="${r.row}|${d.f}" type="button">Replace</button><button class="lnk del" data-rmfile="${r.row}|${d.f}" type="button">Delete</button>`
-        :`<button class="btn sm" data-up="${r.row}|${d.f}" type="button">Add file</button>`}</td></tr>`).join("")
+     <td>${fileBtns(r,d)||'<span class="muted">No file</span>'}</td></tr>`).join("")
      :`<tr><td colspan="${civ?9:8}" class="empty">No vehicles match this filter.</td></tr>`}</tbody></table></div>`;
 }
 
@@ -332,18 +333,27 @@ function openForm(row){
   const r=row?ROWS.find(x=>x.row==row):{};editing=r.row?r:null;
   $("dlg-title").textContent=editing?`Edit vehicle ${r.reg}`:"Add vehicle";
   FKEYS.forEach(k=>$("f-"+k).value=r[k]||"");$("f-dept2").value=r.dept||"";
+  $("docfields").innerHTML=DOCS.map(d=>`<div class="docf"><b>${d.s}${d.who==="Driver"?' <span class="cur">(owner / driver)</span>':""}</b>
+    <label>Expiry date<input type="date" id="f-${d.k}" value="${esc(r[d.k]||"")}"></label>
+    <span class="cur">${r[d.f]?`File uploaded · <button class="lnk" type="button" data-view="${r.row}|${d.f}">View</button><button class="lnk del" type="button" data-rmfile="${r.row}|${d.f}">Delete file</button> · choose a new file to replace`:"No file uploaded"}</span>
+    <input type="file" id="u-${d.k}" accept=".pdf,image/*" aria-label="${d.s} file"></div>`).join("");
   $("dlg-err").hidden=true;$("dlg").showModal();$("f-reg").focus();
 }
+function openFormKeep(row,keep){openForm(row);keep.forEach(([k,v])=>{$("f-"+k).value=v})}
 const fail=m=>{$("dlg-err").textContent=m;$("dlg-err").hidden=false};
 const b64=f=>new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(",")[1]);fr.onerror=no;fr.readAsDataURL(f)});
 $("frm").addEventListener("submit",async e=>{
   e.preventDefault();
   const data={};FKEYS.forEach(k=>data[k]=$("f-"+k).value.trim());data.dept=$("f-dept2").value.trim();
   ["model","dept","owner","designation"].forEach(k=>data[k]=data[k].toUpperCase());
+  DOCS.forEach(d=>data[d.k]=$("f-"+d.k).value);
   if(!data.reg)return fail("Registration number is required.");
+  const files=DOCS.map(d=>({d,f:$("u-"+d.k).files[0]})).filter(x=>x.f);
+  const big=files.find(x=>x.f.size>10*1024*1024);if(big)return fail(`${big.d.s} file is over 10 MB.`);
   const btn=$("dlg-save");btn.disabled=true;btn.textContent="Saving…";
   try{const res=await api("save",{row:editing?.row||0,data});
-    $("dlg").close();toast(editing?"Saved":"Vehicle added. Add document dates and files from the Dashboard tiles.");await load();
+    for(const x of files){btn.textContent=`Uploading ${x.d.s}…`;await api("upload",{row:res.row,field:x.d.f,name:x.f.name,mime:x.f.type,data:await b64(x.f)})}
+    $("dlg").close();toast(editing?"Saved":"Vehicle added");await load();
   }catch(err){fail(err.message)}finally{btn.disabled=false;btn.textContent="Save"}
 });
 
@@ -363,7 +373,7 @@ $("upfile").addEventListener("change",async()=>{
 });
 async function removeFile(row,field,btn){
   if(!btn.dataset.c){btn.dataset.c="1";btn.textContent="Confirm delete";return}
-  btn.disabled=true;try{await api("removeFile",{row,field});toast("File deleted");await load();if($("det").open)openDetail(row)}catch(e){toast(e.message);btn.disabled=false}
+  btn.disabled=true;try{await api("removeFile",{row,field});toast("File deleted");await load();if($("det").open)openDetail(row);if($("dlg").open){const keep=DOCS.map(d=>[d.k,$("f-"+d.k).value]);openFormKeep(row,keep)}}catch(e){toast(e.message);btn.disabled=false}
 }
 
 /* ---------- vehicle detail ---------- */
@@ -439,9 +449,7 @@ document.addEventListener("click",e=>{
   const c=e.target.closest("[data-chip]");if(c){chip=c.dataset.chip;renderPanel();return}
   const v=e.target.closest("[data-view]");if(v){const[r,f]=v.dataset.view.split("|");viewFile(r,f,false);return}
   const dl=e.target.closest("[data-dl]");if(dl){const[r,f]=dl.dataset.dl.split("|");viewFile(r,f,true);return}
-  const up=e.target.closest("[data-up]");if(up){const[r,f]=up.dataset.up.split("|");pickFile(r,f);return}
   const rm=e.target.closest("[data-rmfile]");if(rm){const[r,f]=rm.dataset.rmfile.split("|");removeFile(r,f,rm);return}
-  const sd=e.target.closest("[data-savedate]");if(sd){const[r,k]=sd.dataset.savedate.split("|");saveDate(r,k,sd);return}
   const op=e.target.closest("[data-open]");if(op){openDetail(op.dataset.open);return}
   const dz=e.target.closest("[data-del]");if(dz){askRemove(dz.dataset.del);return}
   const ed=e.target.closest("[data-edit]");if(ed){if($("det").open)$("det").close();openForm(ed.dataset.edit);return}
