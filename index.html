@@ -3,77 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BEC Fleet Register</title>
+<title>BEC Fleet Management</title>
 <style>
 /* Brand: Al Ansari Exchange — Royal Blue #002664, Bright Blue #0083BE, Gray #8B8D8E; Verdana for internal copy */
 :root{
   --royal:#002664;--bright:#0083BE;--gray:#8B8D8E;--magenta:#EE4899;
   --bg:#F4F6FA;--surface:#FFFFFF;--fg:#0E1B33;--muted:#5D6573;--line:#DCE1EA;--soft:#EAF0F8;
-  --head:#002664;--btn:#002664;--btn-fg:#FFFFFF;--accent:#0083BE;
   --ok:#1E7B4C;--ok-bg:#E2F3EA;--warn:#9A5B00;--warn-bg:#FDF0D9;--bad:#B4232F;--bad-bg:#FBE3E5;--idle-bg:#ECEEF1;
-  color-scheme:light;
-  --font:Verdana,Geneva,"DejaVu Sans",sans-serif;--r:6px;
+  color-scheme:light;--font:Verdana,Geneva,"DejaVu Sans",sans-serif;--r:6px;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font:13px/1.5 var(--font);padding-bottom:env(safe-area-inset-bottom,0px)}
 .wrap{max-width:1280px;margin:0 auto;padding-inline:16px}
-header.top{background:var(--head);color:#fff;padding-top:env(safe-area-inset-top,0px)}
+header.top{background:var(--royal);color:#fff;padding-top:env(safe-area-inset-top,0px)}
 header.top .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:20px 14px}
 .brand small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
 .brand h1{margin:2px 0 0;font-size:22px}
-.meta{font-size:12px;opacity:.85;text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.meta{font-size:12px;opacity:.9;display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right}
 .meta button{font:inherit;font-size:12px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:var(--r);padding:4px 10px;cursor:pointer}
 .strip{height:4px;background:linear-gradient(90deg,var(--bright) 0 70%,var(--magenta) 70% 100%)}
 nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
 nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
 nav.tabs button{font:inherit;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:12px 14px;cursor:pointer;white-space:nowrap}
-nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent);font-weight:bold}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--bright);font-weight:bold}
+:focus-visible{outline:2px solid var(--bright);outline-offset:2px}
 .count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--soft);font-size:11px;text-align:center}
-.count.bad{background:var(--bad-bg);color:var(--bad)}
 main{padding-block:20px 48px}
-.notice{background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:16px}
-.notice.err{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--r);padding:14px 16px}
-.kpi.bad{border-top-color:var(--bad)}.kpi.warn{border-top-color:var(--warn)}
-.kpi .lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.kpi .val{font-size:28px;font-weight:bold;font-variant-numeric:tabular-nums;line-height:1.2}
-.kpi .sub{font-size:12px;color:var(--muted)}
-.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
-.panel h2{font-size:14px;margin:0;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}
-.panel h2 span{font-weight:normal;color:var(--muted);font-size:12px}
+.notice{border-radius:var(--r);padding:10px 14px;margin-bottom:16px;background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.tile select{font-size:12px;padding:3px 6px;margin-left:6px;vertical-align:1px}
+.tile .lab label{display:inline-flex;align-items:center}
+.tile{font:inherit;text-align:left;color:inherit;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--bright);border-radius:var(--r);padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:2px;transition:box-shadow .15s,border-color .15s}
+.tile:hover{box-shadow:0 2px 10px rgba(0,38,100,.10)}
+.tile[aria-pressed="true"]{border-color:var(--royal);background:var(--soft);box-shadow:inset 0 0 0 1px var(--royal)}
+.tile.bad{border-top-color:var(--bad)}.tile.warn{border-top-color:var(--warn)}.tile.royal{border-top-color:var(--royal)}
+.tile .lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tile .val{font-size:28px;font-weight:bold;font-variant-numeric:tabular-nums;line-height:1.2}
+.tile .sub{font-size:12px;color:var(--muted)}
+.tile .go{font-size:11px;color:var(--bright);margin-top:4px}
+.doctiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.doctile{border-top-color:var(--royal);padding:16px 18px;gap:8px}
+.doctile h3{margin:0;font-size:15px}
+.doctile .stats{display:flex;flex-wrap:wrap;gap:6px}
+.doctile .foot{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0;margin-bottom:16px}
+.panel>h2{font-size:15px;margin:0;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center}
+.panel>h2 span{font-weight:normal;color:var(--muted);font-size:12px}
 .panel .body{padding:12px 16px}
-.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
-.alerts{max-height:560px;overflow:auto}
-.alert{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
-.alert:last-child{border-bottom:0}
-.alert .bar{align-self:stretch;border-radius:2px}
-.alert .t{font-weight:bold}.alert .s{color:var(--muted);font-size:12px}
+.ptools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
 .empty{padding:20px 16px;color:var(--muted)}
 .bars{display:flex;flex-direction:column;gap:10px}
 .barrow{display:grid;grid-template-columns:120px minmax(0,1fr) 32px;gap:8px;align-items:center;font-size:12px}
 .track{height:10px;background:var(--soft);border-radius:5px;overflow:hidden;display:flex}
 .track i{display:block;height:100%}
 .barrow b{text-align:right;font-variant-numeric:tabular-nums}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:10px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .toolbar .left{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;max-width:100%}
 input[type=search]{width:260px}
+input.dt{padding:5px 8px;font-size:12px}
 .btn{font:inherit;border-radius:var(--r);padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
-.btn.primary{background:var(--btn);border-color:var(--btn);color:var(--btn-fg)}
+.btn.primary{background:var(--royal);border-color:var(--royal);color:#fff}
 .btn.danger{color:var(--bad);border-color:var(--bad)}
 .btn.sm{padding:4px 10px;font-size:12px}
 .btn:disabled{opacity:.6;cursor:wait}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{font:inherit;font-size:12px;padding:5px 12px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--soft);color:var(--fg);border-color:var(--accent)}
-.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
-table{width:100%;border-collapse:collapse;min-width:980px}
+.chip[aria-pressed="true"]{background:var(--soft);color:var(--fg);border-color:var(--bright)}
+.tablewrap{overflow-x:auto}
+.tablewrap.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:900px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);background:var(--soft);white-space:nowrap}
 tr:last-child td{border-bottom:0}
@@ -84,22 +88,21 @@ td.act{text-align:right;white-space:nowrap}
 .pill{display:inline-block;font-size:11px;font-weight:bold;padding:2px 9px;border-radius:10px;white-space:nowrap}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.idle{background:var(--idle-bg);color:var(--muted)}
 .dcell .d{display:block;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
-.dcell a{color:var(--accent);font-size:11px;margin-left:4px}
+.lnk{font:inherit;font-size:12px;background:none;border:0;padding:0 3px;color:var(--bright);cursor:pointer;text-decoration:underline}
+.lnk.del{color:var(--bad)}
+.datebox{display:flex;gap:6px;align-items:center}
+
 dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--fg);padding:0;width:min(680px,calc(100vw - 32px))}
-dialog::backdrop{background:rgba(0,20,50,.45)}
+dialog::backdrop{background:rgba(0,20,50,.35)}
 dialog header{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:bold;font-size:15px}
 .fields{padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-height:68vh;overflow:auto}
 .fields h3{grid-column:1/-1;margin:6px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:4px}
 .fields label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
-.fields label.full{grid-column:1/-1}
 .fields .file{font-size:11px}
-.fields .file a{color:var(--accent)}
+.fields .hint{grid-column:1/-1;font-size:12px;color:var(--muted);margin:0}
 dialog footer{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
 dialog footer .r{display:flex;gap:8px;margin-left:auto}
 .err{color:var(--bad);font-size:12px;padding:0 18px;margin:0 0 8px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:var(--r);font-size:12px;z-index:50}
-[hidden]{display:none!important}
-.lnk{font:inherit;font-size:11px;background:none;border:0;padding:0 2px;color:var(--accent);cursor:pointer;text-decoration:underline}
 .det{padding:16px 18px;max-height:70vh;overflow:auto;display:flex;flex-direction:column;gap:16px}
 .kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
 .kv div{min-width:0}.kv span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
@@ -107,43 +110,41 @@ dialog footer .r{display:flex;gap:8px;margin-left:auto}
 .doc{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .doc .h{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:bold}
 .doc .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.doc .muted{color:var(--muted);font-size:12px}
+.muted{color:var(--muted);font-size:12px}
 #viewer{width:min(1000px,calc(100vw - 24px))}
 .vbody{height:72vh;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:auto}
 .vbody iframe{width:100%;height:100%;border:0;background:#fff}
 .vbody img{max-width:100%;max-height:100%}
-@media (max-width:520px){.kv,.docs{grid-template-columns:1fr}}
-@media (max-width:860px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:520px){input[type=search]{width:100%}.toolbar .left{width:100%}.fields{grid-template-columns:1fr}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:12px;z-index:50}
+[hidden]{display:none!important}
+
+@media (max-width:760px){.doctiles{grid-template-columns:1fr}}
+@media (max-width:640px){.tiles{grid-template-columns:1fr}}
+@media (max-width:520px){input[type=search]{width:100%}.toolbar .left{width:100%}.fields,.kv,.docs{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="wrap">
-    <div class="brand"><small>BEC &amp; Al Ansari Exchange · Kuwait</small><h1>Fleet Register</h1></div>
+    <div class="brand"><small>BEC &amp; Al Ansari Exchange · Kuwait</small><h1>Fleet Management</h1></div>
     <div class="meta"><span id="today"></span><span id="synced">Connecting…</span><button id="reload" type="button">Refresh data</button></div>
   </div>
   <div class="strip"></div>
 </header>
 <nav class="tabs" aria-label="Sections"><div class="wrap" role="tablist">
-  <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
-  <button role="tab" data-tab="vehicles" aria-selected="false">Vehicles<span class="count" id="c-v">0</span></button>
-  <button role="tab" data-tab="expiries" aria-selected="false">Document expiries<span class="count" id="c-x">0</span></button>
+  <button role="tab" data-tab="overview" aria-selected="true" type="button">Dashboard</button>
+  <button role="tab" data-tab="vehicles" aria-selected="false" type="button">Vehicles<span class="count" id="c-v">0</span></button>
 </div></nav>
 
 <main class="wrap">
   <div class="notice" id="notice" hidden></div>
 
   <section id="p-overview">
-    <div class="kpis" id="kpis"></div>
-    <div class="grid2">
-      <div class="panel"><h2>Needs attention <span>Expired or expiring within 60 days</span></h2><div class="alerts" id="alerts"></div></div>
-      <div class="stack">
-        <div class="panel"><h2>Document health</h2><div class="body"><div class="bars" id="dochealth"></div>
-          <div class="legend"><span><i style="background:var(--ok)"></i>Valid</span><span><i style="background:var(--warn)"></i>Due ≤30 days</span><span><i style="background:var(--bad)"></i>Expired</span><span><i style="background:var(--idle-bg)"></i>No date</span></div></div></div>
-        <div class="panel"><h2>Vehicles by department</h2><div class="body"><div class="bars" id="bydept"></div></div></div>
-      </div>
-    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="doctiles" id="doctiles"></div>
+    <div class="panel" id="panel"></div>
+    <div class="panel"><h2>Vehicles by department</h2><div class="body"><div class="bars" id="bydept"></div></div></div>
   </section>
 
   <section id="p-vehicles" hidden>
@@ -151,22 +152,11 @@ dialog footer .r{display:flex;gap:8px;margin-left:auto}
       <input type="search" id="q-v" placeholder="Search plate, model, owner, department" aria-label="Search vehicles">
       <select id="f-dept" aria-label="Department"><option value="">All departments</option></select>
     </div><div class="left"><button class="btn" id="export" type="button">Export to Excel (CSV)</button><button class="btn primary" id="add" type="button">Add vehicle</button></div></div>
-    <div class="tablewrap"><table><thead><tr><th>#</th><th>Plate</th><th>Vehicle</th><th>Department</th><th>Owner / driver</th><th>Daftar</th><th>Comp. insurance</th><th>Driving licence</th><th>Civil ID</th><th></th></tr></thead><tbody id="tb-v"></tbody></table></div>
-  </section>
-
-  <section id="p-expiries" hidden>
-    <div class="toolbar"><div class="left">
-      <input type="search" id="q-x" placeholder="Search plate, owner, document" aria-label="Search documents">
-      <div class="chips" id="xfilter">
-        <button class="chip" data-f="all" aria-pressed="true" type="button">All</button>
-        <button class="chip" data-f="bad" aria-pressed="false" type="button">Expired</button>
-        <button class="chip" data-f="warn" aria-pressed="false" type="button">Due ≤30 days</button>
-        <button class="chip" data-f="ok" aria-pressed="false" type="button">Valid</button>
-      </div></div></div>
-    <div class="tablewrap"><table><thead><tr><th>Document</th><th>Plate</th><th>Owner / driver</th><th>Department</th><th>Expiry date</th><th>Status</th><th>File</th></tr></thead><tbody id="tb-x"></tbody></table></div>
+    <div class="tablewrap box"><table><thead><tr><th>#</th><th>Plate</th><th>Vehicle</th><th>Department</th><th>Owner / driver</th><th>Daftar</th><th>Insurance</th><th>Civil ID</th><th>Driving licence</th><th></th></tr></thead><tbody id="tb-v"></tbody></table></div>
   </section>
 </main>
 
+<!-- add / edit vehicle -->
 <dialog id="dlg"><form id="frm" novalidate>
   <header id="dlg-title">Edit vehicle</header>
   <div class="fields">
@@ -180,34 +170,43 @@ dialog footer .r{display:flex;gap:8px;margin-left:auto}
     <label>Designation<input id="f-designation" list="desigs"></label>
     <label>Civil ID no.<input id="f-civilNo" inputmode="numeric"></label>
     <label>Remarks<input id="f-remarks"></label>
-    <h3>Expiry dates and documents</h3>
-    <div id="docfields" style="display:contents"></div>
+    <h3>Driving licence</h3>
+    <label>Driving licence expiry<input type="date" id="f-dl"><span class="file" id="fl-dl"></span></label>
+    <label>Driving licence file<input type="file" id="u-dl" accept=".pdf,image/*"></label>
+    <p class="hint">Daftar, Insurance and Civil ID expiry dates and files are managed from their tiles on the Dashboard.</p>
   </div>
   <p class="err" id="dlg-err" hidden></p>
-  <footer>
-    <button type="button" class="btn danger" id="dlg-del" hidden>Delete</button>
-    <div class="r"><button type="button" class="btn" id="dlg-cancel">Cancel</button><button type="submit" class="btn primary" id="dlg-save">Save</button></div>
-  </footer>
+  <footer><div class="r"><button type="button" class="btn" id="dlg-cancel">Cancel</button><button type="submit" class="btn primary" id="dlg-save">Save</button></div></footer>
 </form></dialog>
+
+<!-- vehicle details -->
 <dialog id="det"><header id="det-title">Vehicle</header><div class="det" id="det-body"></div>
   <footer><button type="button" class="btn danger" id="det-del">Remove vehicle</button><div class="r"><button type="button" class="btn" id="det-close">Close</button><button type="button" class="btn primary" id="det-edit">Edit details</button></div></footer></dialog>
+
+<!-- document viewer -->
 <dialog id="viewer"><header id="v-title">Document</header><div class="vbody" id="v-body"></div>
-  <footer><span id="v-name" style="color:var(--muted);font-size:12px;align-self:center"></span><div class="r"><button type="button" class="btn" id="v-close">Close</button><button type="button" class="btn primary" id="v-dl">Download</button></div></footer></dialog>
-<dialog id="cfm"><header>Remove vehicle</header><div class="det"><p id="cfm-text" style="margin:0"></p><p class="err" id="cfm-err" hidden style="padding:0"></p></div>
+  <footer><span id="v-name" class="muted" style="align-self:center"></span><div class="r"><button type="button" class="btn" id="v-close">Close</button><button type="button" class="btn primary" id="v-dl">Download</button></div></footer></dialog>
+
+<!-- confirm remove -->
+<dialog id="cfm"><header id="cfm-title">Remove vehicle</header><div class="det"><p id="cfm-text" style="margin:0"></p><p class="err" id="cfm-err" hidden style="padding:0"></p></div>
   <footer><div class="r"><button type="button" class="btn" id="cfm-no">Cancel</button><button type="button" class="btn danger" id="cfm-yes">Remove</button></div></footer></dialog>
+
+<input type="file" id="upfile" accept=".pdf,image/*" hidden>
 <datalist id="depts"></datalist><datalist id="desigs"></datalist>
 <div class="toast" id="toast" hidden></div>
 
 <script>
-/* ===== Set this to your Apps Script web app /exec URL ===== */
+/* ===== Apps Script web app /exec URL ===== */
 const API_URL = "https://script.google.com/macros/s/AKfycbz2Edk0xhgNv29vUpHCSL9Y7QpU06f5XZFs6yMSX5vDXCflJwZd5RFTBYGd7axkWast/exec";
 
 const DOCS=[
-  {k:"daftar",l:"Daftar",f:"daftarFile",who:"Vehicle"},
-  {k:"insurance",l:"Comp. insurance",f:"insuranceFile",who:"Vehicle"},
-  {k:"dl",l:"Driving licence",f:"dlFile",who:"Driver"},
-  {k:"civilId",l:"Civil ID",f:"civilIdFile",who:"Driver"}];
-let ROWS=[], tab="overview", xf="all", editing=null;
+  {k:"daftar",l:"Vehicle Registration (Daftar)",s:"Daftar",f:"daftarFile",who:"Vehicle",tile:1},
+  {k:"civilId",l:"Owner Civil ID",s:"Civil ID",f:"civilIdFile",who:"Driver",tile:1},
+  {k:"insurance",l:"Insurance",s:"Insurance",f:"insuranceFile",who:"Vehicle",tile:1},
+  {k:"dl",l:"Driving licence",s:"Driving licence",f:"dlFile",who:"Driver",tile:0}];
+const WINDOWS=[15,30,60,90];
+let win=30;
+let ROWS=[], tab="overview", sel="expired", chip="all", pq="", editing=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const today=()=>{const t=new Date();t.setHours(0,0,0,0);return t};
@@ -218,98 +217,147 @@ const sevTxt=n=>n==null?"Not recorded":n<0?`Expired ${-n} days ago`:n===0?"Expir
 const pill=(c,t)=>`<span class="pill ${c}">${esc(t)}</span>`;
 const isStandby=r=>/FACILIT/i.test(r.owner)||/STAND\s*BY/i.test(r.designation);
 const title=s=>String(s||"").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
-const relevant=(r,d)=>!(d.who==="Driver"&&isStandby(r));   // stand-by vehicles have no driver docs
+const relevant=(r,d)=>!(d.who==="Driver"&&isStandby(r));
+const docBy=k=>DOCS.find(d=>d.k===k);
+const ownerCell=r=>isStandby(r)?pill("idle","Stand-by"):`<b>${esc(title(r.owner))}</b><span class="sub">${esc(title(r.designation))}</span>`;
+const fileBtns=(r,d)=>r[d.f]?`<button class="lnk" data-view="${r.row}|${d.f}" type="button">View</button><button class="lnk" data-dl="${r.row}|${d.f}" type="button">Download</button>`:"";
 
 /* ---------- API ---------- */
 async function api(action,body,params){
-  if(!/^https:\/\/script\.google\.com\//.test(API_URL))throw new Error("Set API_URL in index.html to your Apps Script web app URL.");
-  const res=body?await fetch(API_URL,{method:"POST",body:JSON.stringify({action,...body})}):await fetch(API_URL+"?"+new URLSearchParams({action,...(params||{}),t:Date.now()}));
+  const res=body?await fetch(API_URL,{method:"POST",body:JSON.stringify({action,...body})})
+               :await fetch(API_URL+"?"+new URLSearchParams({action,...(params||{}),t:Date.now()}));
   const j=await res.json(); if(!j.ok)throw new Error(j.error||"Request failed"); return j;
 }
 async function load(){
   $("synced").textContent="Loading…";
   try{const j=await api("list");ROWS=j.rows;$("notice").hidden=true;
     $("synced").textContent="Synced "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" · "+j.sheet;render()}
-  catch(e){$("synced").textContent="Not connected";const n=$("notice");n.className="notice err";n.textContent=e.message;n.hidden=false}
+  catch(e){$("synced").textContent="Not connected";$("notice").textContent=e.message;$("notice").hidden=false}
 }
 
-/* ---------- render ---------- */
-function allDocs(){const out=[];ROWS.forEach(r=>DOCS.forEach(d=>{if(relevant(r,d))out.push({r,d,date:r[d.k],n:days(r[d.k]),file:r[d.f]})}));return out}
+/* ---------- dashboard ---------- */
+function allDocs(){const out=[];ROWS.forEach(r=>DOCS.forEach(d=>{if(relevant(r,d))out.push({r,d,date:r[d.k],n:days(r[d.k])})}));return out}
 function render(){
-  const docs=allDocs(), dated=docs.filter(x=>x.n!=null);
-  const exp=dated.filter(x=>x.n<0), due=dated.filter(x=>x.n>=0&&x.n<=30);
-  $("c-v").textContent=ROWS.length;$("c-x").textContent=exp.length;$("c-x").className="count"+(exp.length?" bad":"");
+  $("c-v").textContent=ROWS.length;
+  const docs=allDocs();
+  const exp=docs.filter(x=>x.n!=null&&x.n<0).length;
   const sb=ROWS.filter(isStandby).length;
-  $("kpis").innerHTML=[["","Vehicles",ROWS.length,`${ROWS.length-sb} assigned · ${sb} stand-by`],
-    [exp.length?"bad":"","Expired documents",exp.length,"Renew immediately"],
-    [due.length?"warn":"","Due in 30 days",due.length,`of ${dated.length} dated documents`],
-    ["","Missing dates",docs.length-dated.length,"Fill in the sheet"]]
-    .map(([c,l,v,s])=>`<div class="kpi ${c}"><div class="lab">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`).join("");
-  const att=dated.filter(x=>x.n<=60).sort((a,b)=>a.n-b.n);
-  $("alerts").innerHTML=att.length?att.map(x=>{const s=sev(x.n);return`<div class="alert"><span class="bar" style="background:var(--${s==="ok"?"accent":s})"></span>
-    <div><div class="t">${esc(x.d.l)} · <span class="plate">${esc(x.r.reg)}</span></div><div class="s">${esc(title(x.r.owner))}${x.r.designation?" · "+esc(title(x.r.designation)):""} · ${esc(x.r.dept)} · ${fmt(x.date)}</div></div>
-    ${pill(s==="ok"?"idle":s,sevTxt(x.n))}</div>`}).join(""):'<div class="empty">Nothing expires in the next 60 days.</div>';
-  $("dochealth").innerHTML=DOCS.map(d=>{const g=docs.filter(x=>x.d===d);const c={ok:0,warn:0,bad:0,idle:0};g.forEach(x=>c[sev(x.n)]++);const t=g.length||1;
-    return`<div class="barrow"><span>${d.l}</span><div class="track">${["ok","warn","bad","idle"].map(k=>c[k]?`<i title="${c[k]}" style="width:${c[k]/t*100}%;background:var(--${k==="idle"?"idle-bg":k})"></i>`:"").join("")}</div><b>${g.length}</b></div>`}).join("");
+  const tiles=[
+    {id:"vehicles",cls:"royal",lab:"Vehicles",val:ROWS.length,sub:`${ROWS.length-sb} assigned · ${sb} stand-by`,go:"View all vehicles"},
+    {id:"expired",cls:exp?"bad":"",lab:"Expired",val:exp,sub:"Renew immediately",go:"View list"},
+    (()=>{const n=docs.filter(x=>x.n!=null&&x.n>=0&&x.n<=win).length;return{id:"due",cls:n?"warn":"",
+      lab:`<label>Due within<select id="win" aria-label="Due within days">${WINDOWS.map(w=>`<option value="${w}"${w===win?" selected":""}>${w} days</option>`).join("")}</select></label>`,
+      val:n,sub:`Expiring by ${fmt(addDays(win))}`,go:"View list"}})()];
+  $("tiles").innerHTML=tiles.map(t=>`<div class="tile ${t.cls}" role="button" tabindex="0" data-tile="${t.id}" aria-pressed="${sel===t.id}"><span class="lab">${t.lab}</span><span class="val">${t.val}</span><span class="sub">${t.sub}</span><span class="go">${t.go} ›</span></div>`).join("");
+  $("doctiles").innerHTML=DOCS.filter(d=>d.tile).map(d=>{
+    const g=docs.filter(x=>x.d===d);const c={ok:0,warn:0,bad:0,idle:0};g.forEach(x=>c[sev(x.n)]++);
+    const files=ROWS.filter(r=>relevant(r,d)&&r[d.f]).length;
+    return`<button class="tile doctile" data-tile="${d.k}" aria-pressed="${sel===d.k}" type="button"><span class="lab">Document</span><h3>${d.l}</h3>
+      <span class="stats">${pill("bad",c.bad+" expired")}${pill("warn",c.warn+" due ≤30d")}${pill("ok",c.ok+" valid")}${c.idle?pill("idle",c.idle+" no date"):""}</span>
+      <span class="foot"><span>${files} of ${g.length} files uploaded</span><span class="go">Edit dates &amp; files ›</span></span></button>`}).join("");
+  renderPanel();
   const depts=[...new Set(ROWS.map(r=>r.dept).filter(Boolean))].sort();const max=Math.max(1,...depts.map(dp=>ROWS.filter(r=>r.dept===dp).length));
-  $("bydept").innerHTML=depts.map(dp=>{const n=ROWS.filter(r=>r.dept===dp).length;return`<div class="barrow"><span>${esc(dp)}</span><div class="track"><i style="width:${n/max*100}%;background:var(--accent)"></i></div><b>${n}</b></div>`}).join("")||'<span class="empty">No vehicles.</span>';
+  $("bydept").innerHTML=depts.map(dp=>{const n=ROWS.filter(r=>r.dept===dp).length;return`<div class="barrow"><span>${esc(dp)}</span><div class="track"><i style="width:${n/max*100}%;background:var(--bright)"></i></div><b>${n}</b></div>`}).join("")||'<span class="muted">No vehicles.</span>';
   const fd=$("f-dept"),cur=fd.value;fd.innerHTML='<option value="">All departments</option>'+depts.map(d=>`<option${d===cur?" selected":""}>${esc(d)}</option>`).join("");
   $("depts").innerHTML=depts.map(d=>`<option value="${esc(d)}">`).join("");
   $("desigs").innerHTML=[...new Set(ROWS.map(r=>r.designation).filter(Boolean))].map(d=>`<option value="${esc(d)}">`).join("");
-  renderVehicles();renderExpiries();
+  renderVehicles();
 }
+const addDays=n=>{const t=today();t.setDate(t.getDate()+n);return`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`};
 const has=(q,...v)=>!q||v.join(" ").toLowerCase().includes(q);
+
+function renderPanel(){
+  const p=$("panel");
+  if(docBy(sel)?.tile){renderDocPanel(docBy(sel));return}
+  // expired / due windows
+  const docs=allDocs().filter(x=>x.n!=null);
+  let list,head,sub;
+  if(sel==="expired"){list=docs.filter(x=>x.n<0);head="Expired documents";sub="Past their expiry date"}
+  else{const w=win;list=docs.filter(x=>x.n>=0&&x.n<=w);head=`Due in the next ${w} days`;sub=`Expiring between today and ${fmt(addDays(w))}`}
+  list.sort((a,b)=>a.n-b.n);
+  p.innerHTML=`<h2>${head} <span>${sub} · ${list.length} documents</span></h2>
+   <div class="tablewrap"><table><thead><tr><th>Document</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th><th>Expiry date</th><th>Status</th><th>File</th><th></th></tr></thead><tbody>
+   ${list.length?list.map(x=>`<tr><td><b>${x.d.s}</b></td><td><span class="plate">${esc(x.r.reg)}</span></td><td>${esc(title(x.r.model))}</td><td>${ownerCell(x.r)}</td><td>${esc(x.r.dept)}</td>
+     <td class="num">${fmt(x.date)}</td><td>${pill(sev(x.n),sevTxt(x.n))}</td><td>${fileBtns(x.r,x.d)||'<span class="muted">No file</span>'}</td>
+     <td class="act">${x.d.tile?`<button class="btn sm" data-tile="${x.d.k}" type="button">Update</button>`:`<button class="btn sm" data-edit="${x.r.row}" type="button">Update</button>`}</td></tr>`).join("")
+     :`<tr><td colspan="9" class="empty">${sel==="expired"?"No expired documents.":"Nothing is due in this period."}</td></tr>`}</tbody></table></div>`;
+}
+function renderDocPanel(d){
+  const rows=ROWS.filter(r=>relevant(r,d)).map(r=>({r,n:days(r[d.k])}))
+    .filter(x=>(chip==="all"||(chip==="due"?x.n!=null&&x.n>=0&&x.n<=90:sev(x.n)===chip))&&has(pq,x.r.reg,x.r.owner,x.r.model,x.r.dept,x.r.civilNo))
+    .sort((a,b)=>(a.n??1e9)-(b.n??1e9));
+  const civ=d.k==="civilId";
+  const chips=[["all","All"],["bad","Expired"],["due","Due ≤90 days"],["ok","Valid"],["idle","No date"]];
+  $("panel").innerHTML=`<h2>${d.l} <span>Change a date and press Save · upload PDF or photo up to 10 MB</span></h2>
+   <div class="ptools"><input type="search" id="pq" value="${esc(pq)}" placeholder="Search plate, owner${civ?", Civil ID":""}" aria-label="Search">
+     <div class="chips">${chips.map(([k,l])=>`<button class="chip" data-chip="${k}" aria-pressed="${chip===k}" type="button">${l}</button>`).join("")}</div></div>
+   <div class="tablewrap"><table><thead><tr><th>#</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th>${civ?"<th>Civil ID no.</th>":""}<th>Expiry date</th><th>Status</th><th>Document file</th></tr></thead><tbody>
+   ${rows.length?rows.map(({r,n})=>`<tr><td class="num">${esc(r.sno)}</td><td><span class="plate">${esc(r.reg)}</span></td><td>${esc(title(r.model))}<span class="sub">${esc(r.year)}</span></td>
+     <td>${ownerCell(r)}</td><td>${esc(r.dept)}</td>${civ?`<td class="num">${esc(r.civilNo||"—")}</td>`:""}
+     <td><div class="datebox"><input type="date" class="dt" id="dt-${r.row}" value="${esc(r[d.k])}" data-orig="${esc(r[d.k])}" aria-label="${esc(d.s)} expiry for ${esc(r.reg)}">
+       <button class="btn sm primary" id="sv-${r.row}" data-savedate="${r.row}|${d.k}" type="button" hidden>Save</button></div></td>
+     <td>${pill(sev(n),sevTxt(n))}</td>
+     <td>${r[d.f]?`${fileBtns(r,d)}<button class="lnk" data-up="${r.row}|${d.f}" type="button">Replace</button><button class="lnk del" data-rmfile="${r.row}|${d.f}" type="button">Delete</button>`
+        :`<button class="btn sm" data-up="${r.row}|${d.f}" type="button">Add file</button>`}</td></tr>`).join("")
+     :`<tr><td colspan="${civ?9:8}" class="empty">No vehicles match this filter.</td></tr>`}</tbody></table></div>`;
+}
+
+/* ---------- vehicles tab ---------- */
 function dcell(r,d){if(!relevant(r,d))return'<td class="dcell"><span class="pill idle">N/A</span></td>';const n=days(r[d.k]);
-  return`<td class="dcell">${pill(sev(n),n==null?"Not recorded":n<0?"Expired":n<=30?`${n}d left`:"Valid")}${r[d.f]?`<button class="lnk" data-view="${r.row}|${d.f}" type="button">View</button><button class="lnk" data-dl="${r.row}|${d.f}" type="button">Download</button>`:""}<span class="d">${fmt(r[d.k])}</span></td>`}
+  return`<td class="dcell">${pill(sev(n),n==null?"Not recorded":n<0?"Expired":n<=30?`${n}d left`:"Valid")}<span class="d">${fmt(r[d.k])}</span></td>`}
 function renderVehicles(){
   const q=$("q-v").value.trim().toLowerCase(),dp=$("f-dept").value;
   const rows=ROWS.filter(r=>(!dp||r.dept===dp)&&has(q,r.reg,r.model,r.owner,r.designation,r.dept,r.remarks));
   $("tb-v").innerHTML=rows.length?rows.map(r=>`<tr><td class="num">${esc(r.sno)}</td><td><span class="plate">${esc(r.reg)}</span></td>
-    <td>${esc(title(r.model))}<span class="sub">${esc(r.year)}${r.remarks?" · "+esc(r.remarks):""}</span></td><td>${esc(r.dept)}</td>
-    <td>${isStandby(r)?pill("idle","Stand-by"):`<b>${esc(title(r.owner))}</b><span class="sub">${esc(title(r.designation))}</span>`}</td>
-    ${DOCS.map(d=>dcell(r,d)).join("")}<td class="act"><button class="btn sm" data-open="${r.row}" type="button">Open</button> <button class="btn sm" data-edit="${r.row}" type="button">Edit</button> <button class="btn sm danger" data-del="${r.row}" type="button">Remove</button></td></tr>`).join("")
-    :`<tr><td colspan="10" class="empty">${ROWS.length?"No vehicles match your search.":"No vehicles yet."}</td></tr>`;
-}
-function renderExpiries(){
-  const q=$("q-x").value.trim().toLowerCase();
-  const rows=allDocs().filter(x=>(xf==="all"||sev(x.n)===xf)&&has(q,x.d.l,x.r.reg,x.r.owner,x.r.dept)).sort((a,b)=>(a.n??1e9)-(b.n??1e9));
-  $("tb-x").innerHTML=rows.length?rows.map(x=>`<tr><td><b>${x.d.l}</b><span class="sub">${x.d.who} document</span></td><td><span class="plate">${esc(x.r.reg)}</span></td>
-    <td>${esc(title(x.r.owner))}<span class="sub">${esc(title(x.r.designation))}</span></td><td>${esc(x.r.dept)}</td><td class="num">${fmt(x.date)}</td>
-    <td>${pill(sev(x.n),sevTxt(x.n))}</td><td>${x.file?`<button class="lnk" data-view="${x.r.row}|${x.d.f}" type="button">View</button><button class="lnk" data-dl="${x.r.row}|${x.d.f}" type="button">Download</button>`:'<span style="color:var(--muted)">No file</span>'}</td></tr>`).join("")
-    :`<tr><td colspan="7" class="empty">No documents match this filter.</td></tr>`;
+    <td>${esc(title(r.model))}<span class="sub">${esc(r.year)}${r.remarks?" · "+esc(r.remarks):""}</span></td><td>${esc(r.dept)}</td><td>${ownerCell(r)}</td>
+    ${DOCS.map(d=>dcell(r,d)).join("")}
+    <td class="act"><button class="btn sm" data-open="${r.row}" type="button">Open</button> <button class="btn sm" data-edit="${r.row}" type="button">Edit</button> <button class="btn sm danger" data-del="${r.row}" type="button">Remove</button></td></tr>`).join("")
+    :`<tr><td colspan="10" class="empty">${ROWS.length?"No vehicles match your search.":"No vehicles yet. Use Add vehicle."}</td></tr>`;
 }
 
-/* ---------- form ---------- */
-$("docfields").innerHTML=DOCS.map(d=>`<label>${d.l} expiry<input type="date" id="f-${d.k}"><span class="file" id="fl-${d.k}"></span>
-  <input type="file" id="u-${d.k}" accept=".pdf,image/*" aria-label="Upload ${d.l} file"></label>`).join("");
+/* ---------- add / edit form ---------- */
 const FKEYS=["reg","model","year","owner","designation","civilNo","remarks"];
 function openForm(row){
   const r=row?ROWS.find(x=>x.row==row):{};editing=r.row?r:null;
   $("dlg-title").textContent=editing?`Edit vehicle ${r.reg}`:"Add vehicle";
   FKEYS.forEach(k=>$("f-"+k).value=r[k]||"");$("f-dept2").value=r.dept||"";
-  DOCS.forEach(d=>{$("f-"+d.k).value=r[d.k]||"";$("u-"+d.k).value="";$("fl-"+d.k).innerHTML=r[d.f]?`File uploaded · <button class="lnk" type="button" data-view="${r.row}|${d.f}">View</button> · choose a new file to replace it`:"No file uploaded"});
-  $("dlg-err").hidden=true;$("dlg-del").hidden=!editing;$("dlg-del").textContent="Delete";$("dlg-del").dataset.c="";
-  $("dlg").showModal();$("f-reg").focus();
+  $("f-dl").value=r.dl||"";$("u-dl").value="";
+  $("fl-dl").innerHTML=r.dlFile?`File uploaded · <button class="lnk" type="button" data-view="${r.row}|dlFile">View</button>`:"No file uploaded";
+  $("dlg-err").hidden=true;$("dlg").showModal();$("f-reg").focus();
 }
 const fail=m=>{$("dlg-err").textContent=m;$("dlg-err").hidden=false};
 const b64=f=>new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(",")[1]);fr.onerror=no;fr.readAsDataURL(f)});
 $("frm").addEventListener("submit",async e=>{
   e.preventDefault();
-  const data={};FKEYS.forEach(k=>data[k]=$("f-"+k).value.trim());data.dept=$("f-dept2").value.trim();DOCS.forEach(d=>data[d.k]=$("f-"+d.k).value);
-  data.model=data.model.toUpperCase();data.dept=data.dept.toUpperCase();data.owner=data.owner.toUpperCase();data.designation=data.designation.toUpperCase();
+  const data={};FKEYS.forEach(k=>data[k]=$("f-"+k).value.trim());data.dept=$("f-dept2").value.trim();data.dl=$("f-dl").value;
+  ["model","dept","owner","designation"].forEach(k=>data[k]=data[k].toUpperCase());
   if(!data.reg)return fail("Registration number is required.");
-  const files=DOCS.map(d=>({d,f:$("u-"+d.k).files[0]})).filter(x=>x.f);
-  const big=files.find(x=>x.f.size>10*1024*1024);if(big)return fail(`${big.d.l} file is over 10 MB.`);
+  const f=$("u-dl").files[0];if(f&&f.size>10*1024*1024)return fail("Driving licence file is over 10 MB.");
   const btn=$("dlg-save");btn.disabled=true;btn.textContent="Saving…";
-  try{
-    const res=await api("save",{row:editing?.row||0,data});
-    for(const x of files){btn.textContent=`Uploading ${x.d.l}…`;await api("upload",{row:res.row,field:x.d.f,name:x.f.name,mime:x.f.type,data:await b64(x.f)})}
-    $("dlg").close();toast(editing?"Saved":"Vehicle added");await load();
+  try{const res=await api("save",{row:editing?.row||0,data});
+    if(f){btn.textContent="Uploading…";await api("upload",{row:res.row,field:"dlFile",name:f.name,mime:f.type,data:await b64(f)})}
+    $("dlg").close();toast(editing?"Saved":"Vehicle added. Add Daftar, Insurance and Civil ID from the Dashboard tiles.");await load();
   }catch(err){fail(err.message)}finally{btn.disabled=false;btn.textContent="Save"}
 });
-$("dlg-del").onclick=async()=>{const b=$("dlg-del");if(!b.dataset.c){b.dataset.c="1";b.textContent="Confirm delete";return}
-  b.disabled=true;try{await api("delete",{row:editing.row,reg:editing.reg});$("dlg").close();toast("Vehicle deleted");await load()}catch(e){fail(e.message)}finally{b.disabled=false}};
-$("dlg-cancel").onclick=()=>$("dlg").close();
+
+/* ---------- inline date save / file upload (document tiles) ---------- */
+async function saveDate(row,key,btn){
+  const r=ROWS.find(x=>x.row==row);const v=$("dt-"+row).value;btn.disabled=true;btn.textContent="Saving…";
+  try{await api("save",{row:r.row,data:{reg:r.reg,[key]:v}});toast(`${docBy(key).s} date saved for ${r.reg}`);await load()}
+  catch(e){toast(e.message);btn.disabled=false;btn.textContent="Save"}
+}
+function pickFile(row,field){const u=$("upfile");u.dataset.row=row;u.dataset.field=field;u.value="";u.click()}
+$("upfile").addEventListener("change",async()=>{
+  const u=$("upfile"),f=u.files[0];if(!f)return;
+  if(f.size>10*1024*1024)return toast("File is over 10 MB.");
+  const r=ROWS.find(x=>x.row==u.dataset.row);toast(`Uploading file for ${r.reg}…`);
+  try{await api("upload",{row:r.row,field:u.dataset.field,name:f.name,mime:f.type,data:await b64(f)});toast("File uploaded");await load()}
+  catch(e){toast(e.message)}
+});
+async function removeFile(row,field,btn){
+  if(!btn.dataset.c){btn.dataset.c="1";btn.textContent="Confirm delete";return}
+  btn.disabled=true;try{await api("removeFile",{row,field});toast("File deleted");await load();if($("det").open)openDetail(row)}catch(e){toast(e.message);btn.disabled=false}
+}
 
 /* ---------- vehicle detail ---------- */
 function openDetail(row){
@@ -317,9 +365,9 @@ function openDetail(row){
   $("det-title").innerHTML=`<span class="plate">${esc(r.reg)}</span> ${esc(title(r.model))}`;
   const kv=[["S.No",r.sno],["Year",r.year],["Department",r.dept],["Owner",isStandby(r)?"Stand-by (Facilities)":title(r.owner)],["Designation",title(r.designation)],["Civil ID no.",r.civilNo],["Remarks",r.remarks]];
   $("det-body").innerHTML=`<div class="kv">${kv.map(([k,v])=>`<div><span>${k}</span>${esc(v||"—")}</div>`).join("")}</div>
-   <div class="docs">${DOCS.map(d=>{const n=days(r[d.k]);const na=!relevant(r,d);return`<div class="doc"><div class="h">${d.l}${na?pill("idle","N/A"):pill(sev(n),sevTxt(n))}</div>
+   <div class="docs">${DOCS.map(d=>{const n=days(r[d.k]);const na=!relevant(r,d);return`<div class="doc"><div class="h">${d.s}${na?pill("idle","N/A"):pill(sev(n),sevTxt(n))}</div>
     <div class="muted">Expiry: ${fmt(r[d.k])}</div>
-    <div class="row">${r[d.f]?`<button class="btn sm" data-view="${r.row}|${d.f}" type="button">View</button><button class="btn sm" data-dl="${r.row}|${d.f}" type="button">Download</button><button class="btn sm danger" data-rmfile="${r.row}|${d.f}" type="button">Delete file</button>`:`<span class="muted">No file uploaded. Use Edit details to upload.</span>`}</div></div>`}).join("")}</div>`;
+    <div class="row">${na?"":r[d.f]?`<button class="btn sm" data-view="${r.row}|${d.f}" type="button">View</button><button class="btn sm" data-dl="${r.row}|${d.f}" type="button">Download</button>`:`<span class="muted">No file uploaded</span>`}</div></div>`}).join("")}</div>`;
   $("det").showModal();
 }
 
@@ -327,27 +375,24 @@ function openDetail(row){
 let curBlob=null;
 async function viewFile(row,field,download){
   const r=ROWS.find(x=>x.row==row);const d=DOCS.find(x=>x.f===field);
-  if(!download){$("v-title").textContent=`${d.l} · ${r.reg}`;$("v-name").textContent="";$("v-body").innerHTML='<span style="color:var(--muted)">Loading document…</span>';$("viewer").showModal()}
-  else toast(`Preparing ${d.l} download…`);
+  if(!download){$("v-title").textContent=`${d.s} · ${r.reg}`;$("v-name").textContent="";$("v-body").innerHTML='<span class="muted">Loading document…</span>';$("viewer").showModal()}
+  else toast(`Preparing ${d.s} download…`);
   try{
     const j=await api("file",null,{row,field});
     const bin=atob(j.data),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
-    const blob=new Blob([u8],{type:j.mime||"application/octet-stream"});const url=URL.createObjectURL(blob);
-    if(download){const a=document.createElement("a");a.href=url;a.download=j.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);return}
+    const url=URL.createObjectURL(new Blob([u8],{type:j.mime||"application/octet-stream"}));
+    if(download){saveUrl(url,j.name);setTimeout(()=>URL.revokeObjectURL(url),4000);return}
     curBlob={url,name:j.name};$("v-name").textContent=j.name;
-    $("v-body").innerHTML=/^image\//.test(j.mime)?`<img src="${url}" alt="${esc(d.l)}">`:/pdf/.test(j.mime)?`<iframe src="${url}" title="${esc(d.l)}"></iframe>`:'<span style="color:var(--muted)">Preview not available for this file type. Use Download.</span>';
+    $("v-body").innerHTML=/^image\//.test(j.mime)?`<img src="${url}" alt="${esc(d.s)}">`:/pdf/.test(j.mime)?`<iframe src="${url}" title="${esc(d.s)}"></iframe>`:'<span class="muted">Preview not available for this file type. Use Download.</span>';
   }catch(e){if(download)toast(e.message);else $("v-body").innerHTML=`<span style="color:var(--bad)">${esc(e.message)}</span>`}
 }
-$("v-dl").onclick=()=>{if(!curBlob)return;const a=document.createElement("a");a.href=curBlob.url;a.download=curBlob.name;document.body.appendChild(a);a.click();a.remove()};
-async function removeFile(row,field,btn){
-  if(!btn.dataset.c){btn.dataset.c="1";btn.textContent="Confirm delete";return}
-  btn.disabled=true;try{await api("removeFile",{row,field});toast("File deleted");await load();openDetail(row)}catch(e){toast(e.message);btn.disabled=false}
-}
+function saveUrl(url,name){const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+$("v-dl").onclick=()=>{if(curBlob)saveUrl(curBlob.url,curBlob.name)};
 
 /* ---------- remove vehicle ---------- */
 function askRemove(row){
   const r=ROWS.find(x=>x.row==row);if(!r)return;
-  $("cfm-text").innerHTML=`Remove <span class="plate">${esc(r.reg)}</span> ${esc(title(r.model))} (${esc(title(r.owner))}) from the sheet? Its uploaded documents move to the Drive bin.`;
+  $("cfm-text").innerHTML=`Remove <span class="plate">${esc(r.reg)}</span> ${esc(title(r.model))} (${esc(isStandby(r)?"Stand-by":title(r.owner))}) from the sheet? Its uploaded documents move to the Drive bin.`;
   $("cfm-err").hidden=true;$("cfm-yes").disabled=false;$("cfm").showModal();
   $("cfm-yes").onclick=async()=>{$("cfm-yes").disabled=true;try{await api("delete",{row:r.row,reg:r.reg});$("cfm").close();toast("Vehicle removed");await load()}
     catch(e){$("cfm-err").textContent=e.message;$("cfm-err").hidden=false;$("cfm-yes").disabled=false}};
@@ -358,32 +403,44 @@ function exportCsv(){
   const H=["S.NO","VEHICLE MODEL","YEAR","REGISTRATION NO.","DEPT/SECTION","OWNER","Designation","Daftar Expiry","Comp Insurance Expiry","DL Expiry","CIVIL ID Expiry","Civil Id No","Remarks"];
   const K=["sno","model","year","reg","dept","owner","designation","daftar","insurance","dl","civilId","civilNo","remarks"];
   const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-  const csv="\ufeff"+[H.map(q).join(","),...ROWS.map(r=>K.map(k=>k==="civilNo"&&r[k]?q("'"+r[k]):q(DOCS.some(d=>d.k===k)?fmt(r[k]).replace("—",""):r[k])).join(","))].join("\r\n");
-  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");
-  a.href=url;a.download=`BEC_Fleet_${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+  const csv="﻿"+[H.map(q).join(","),...ROWS.map(r=>K.map(k=>k==="civilNo"&&r[k]?q("'"+r[k]):q(DOCS.some(d=>d.k===k)?fmt(r[k]).replace("—",""):r[k])).join(","))].join("\r\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));saveUrl(url,`BEC_Fleet_${new Date().toISOString().slice(0,10)}.csv`);setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 
 /* ---------- events ---------- */
-let tt;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2400)}
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3000)}
 function setTab(t){tab=t;document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["overview","vehicles","expiries"].forEach(s=>$("p-"+s).hidden=s!==t);try{localStorage.setItem("fleet-tab",t)}catch(e){}}
+  ["overview","vehicles"].forEach(s=>$("p-"+s).hidden=s!==t);window.scrollTo({top:0})}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.addEventListener("click",e=>{
+  if(e.target.closest("#win"))return;
+  const t=e.target.closest("[data-tile]");if(t){const id=t.dataset.tile;
+    if(id==="vehicles"){$("q-v").value="";$("f-dept").value="";renderVehicles();setTab("vehicles");return}
+    if(sel!==id){sel=id;chip="all";pq=""}render();if(t.closest("#panel")||t.classList.contains("tile"))$("panel").scrollIntoView({behavior:"smooth",block:"start"});return}
+  const c=e.target.closest("[data-chip]");if(c){chip=c.dataset.chip;renderPanel();return}
   const v=e.target.closest("[data-view]");if(v){const[r,f]=v.dataset.view.split("|");viewFile(r,f,false);return}
   const dl=e.target.closest("[data-dl]");if(dl){const[r,f]=dl.dataset.dl.split("|");viewFile(r,f,true);return}
+  const up=e.target.closest("[data-up]");if(up){const[r,f]=up.dataset.up.split("|");pickFile(r,f);return}
   const rm=e.target.closest("[data-rmfile]");if(rm){const[r,f]=rm.dataset.rmfile.split("|");removeFile(r,f,rm);return}
+  const sd=e.target.closest("[data-savedate]");if(sd){const[r,k]=sd.dataset.savedate.split("|");saveDate(r,k,sd);return}
   const op=e.target.closest("[data-open]");if(op){openDetail(op.dataset.open);return}
   const dz=e.target.closest("[data-del]");if(dz){askRemove(dz.dataset.del);return}
   const ed=e.target.closest("[data-edit]");if(ed){if($("det").open)$("det").close();openForm(ed.dataset.edit);return}
-  const ch=e.target.closest("#xfilter .chip");if(ch){xf=ch.dataset.f;document.querySelectorAll("#xfilter .chip").forEach(c=>c.setAttribute("aria-pressed",c===ch));renderExpiries()}});
-$("add").onclick=()=>openForm();$("export").onclick=exportCsv;
+});
+document.addEventListener("input",e=>{
+  if(e.target.classList.contains("dt")){const row=e.target.id.slice(3);$("sv-"+row).hidden=e.target.value===e.target.dataset.orig}
+  if(e.target.id==="pq"){pq=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;renderPanel();const n=$("pq");n.focus();n.setSelectionRange(pos,pos)}
+});
+document.addEventListener("change",e=>{if(e.target.id==="win"){win=+e.target.value;sel="due";render()}});
+document.addEventListener("keydown",e=>{const t=e.target.closest?.("div.tile[data-tile]");if(t&&e.target===t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t.click()}});
+$("add").onclick=()=>openForm();$("export").onclick=exportCsv;$("reload").onclick=load;
+$("q-v").oninput=renderVehicles;$("f-dept").onchange=renderVehicles;
+$("dlg-cancel").onclick=()=>$("dlg").close();
 $("det-close").onclick=()=>$("det").close();$("det-edit").onclick=()=>{const r=$("det").dataset.row;$("det").close();openForm(r)};
 $("det-del").onclick=()=>{const r=$("det").dataset.row;$("det").close();askRemove(r)};
 $("v-close").onclick=()=>$("viewer").close();$("viewer").addEventListener("close",()=>{if(curBlob){URL.revokeObjectURL(curBlob.url);curBlob=null}$("v-body").innerHTML=""});
-$("cfm-no").onclick=()=>$("cfm").close();$("reload").onclick=load;
-$("q-v").oninput=renderVehicles;$("f-dept").onchange=renderVehicles;$("q-x").oninput=renderExpiries;
+$("cfm-no").onclick=()=>$("cfm").close();
 $("today").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-try{const t=localStorage.getItem("fleet-tab");if(t&&$("p-"+t))setTab(t)}catch(e){}
 render();load();
 </script>
 </body>
