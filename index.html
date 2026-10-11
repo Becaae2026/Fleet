@@ -44,7 +44,8 @@ main{padding-block:20px 48px}
 .tile .val{font-size:28px;font-weight:bold;font-variant-numeric:tabular-nums;line-height:1.2}
 .tile .sub{font-size:12px;color:var(--muted)}
 .tile .go{font-size:11px;color:var(--bright);margin-top:4px}
-.doctiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.doctiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+@media (max-width:1100px){.doctiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .doctile{border-top-color:var(--royal);padding:16px 18px;gap:8px}
 .doctile h3{margin:0;font-size:15px}
 .doctile .stats{display:flex;flex-wrap:wrap;gap:6px}
@@ -170,10 +171,7 @@ dialog footer .r{display:flex;gap:8px;margin-left:auto}
     <label>Designation<input id="f-designation" list="desigs"></label>
     <label>Civil ID no.<input id="f-civilNo" inputmode="numeric"></label>
     <label>Remarks<input id="f-remarks"></label>
-    <h3>Driving licence</h3>
-    <label>Driving licence expiry<input type="date" id="f-dl"><span class="file" id="fl-dl"></span></label>
-    <label>Driving licence file<input type="file" id="u-dl" accept=".pdf,image/*"></label>
-    <p class="hint">Daftar, Insurance and Civil ID expiry dates and files are managed from their tiles on the Dashboard.</p>
+    <p class="hint">Expiry dates and files for Daftar, Insurance, Civil ID and Driving Licence are managed from their tiles on the Dashboard.</p>
   </div>
   <p class="err" id="dlg-err" hidden></p>
   <footer><div class="r"><button type="button" class="btn" id="dlg-cancel">Cancel</button><button type="submit" class="btn primary" id="dlg-save">Save</button></div></footer>
@@ -203,7 +201,7 @@ const DOCS=[
   {k:"daftar",l:"Vehicle Registration (Daftar)",s:"Daftar",f:"daftarFile",who:"Vehicle",tile:1},
   {k:"civilId",l:"Owner Civil ID",s:"Civil ID",f:"civilIdFile",who:"Driver",tile:1},
   {k:"insurance",l:"Insurance",s:"Insurance",f:"insuranceFile",who:"Vehicle",tile:1},
-  {k:"dl",l:"Driving licence",s:"Driving licence",f:"dlFile",who:"Driver",tile:0}];
+  {k:"dl",l:"Driving Licence",s:"Driving licence",f:"dlFile",who:"Driver",tile:1}];
 const WINDOWS=[15,30,60,90];
 let win=30;
 let ROWS=[], tab="overview", sel="expired", chip="all", pq="", editing=null;
@@ -279,7 +277,7 @@ function renderPanel(){
    <div class="tablewrap"><table><thead><tr><th>Document</th><th>Plate</th><th>Vehicle</th><th>Owner / driver</th><th>Department</th><th>Expiry date</th><th>Status</th><th>File</th><th></th></tr></thead><tbody>
    ${list.length?list.map(x=>`<tr><td><b>${x.d.s}</b></td><td><span class="plate">${esc(x.r.reg)}</span></td><td>${esc(title(x.r.model))}</td><td>${ownerCell(x.r)}</td><td>${esc(x.r.dept)}</td>
      <td class="num">${fmt(x.date)}</td><td>${pill(sev(x.n),sevTxt(x.n))}</td><td>${fileBtns(x.r,x.d)||'<span class="muted">No file</span>'}</td>
-     <td class="act">${x.d.tile?`<button class="btn sm" data-tile="${x.d.k}" type="button">Update</button>`:`<button class="btn sm" data-edit="${x.r.row}" type="button">Update</button>`}</td></tr>`).join("")
+     <td class="act"><button class="btn sm" data-tile="${x.d.k}" type="button">Update</button></td></tr>`).join("")
      :`<tr><td colspan="9" class="empty">${sel==="expired"?"No expired documents.":"Nothing is due in this period."}</td></tr>`}</tbody></table></div>`;
 }
 function renderDocPanel(d){
@@ -321,22 +319,18 @@ function openForm(row){
   const r=row?ROWS.find(x=>x.row==row):{};editing=r.row?r:null;
   $("dlg-title").textContent=editing?`Edit vehicle ${r.reg}`:"Add vehicle";
   FKEYS.forEach(k=>$("f-"+k).value=r[k]||"");$("f-dept2").value=r.dept||"";
-  $("f-dl").value=r.dl||"";$("u-dl").value="";
-  $("fl-dl").innerHTML=r.dlFile?`File uploaded · <button class="lnk" type="button" data-view="${r.row}|dlFile">View</button>`:"No file uploaded";
   $("dlg-err").hidden=true;$("dlg").showModal();$("f-reg").focus();
 }
 const fail=m=>{$("dlg-err").textContent=m;$("dlg-err").hidden=false};
 const b64=f=>new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(",")[1]);fr.onerror=no;fr.readAsDataURL(f)});
 $("frm").addEventListener("submit",async e=>{
   e.preventDefault();
-  const data={};FKEYS.forEach(k=>data[k]=$("f-"+k).value.trim());data.dept=$("f-dept2").value.trim();data.dl=$("f-dl").value;
+  const data={};FKEYS.forEach(k=>data[k]=$("f-"+k).value.trim());data.dept=$("f-dept2").value.trim();
   ["model","dept","owner","designation"].forEach(k=>data[k]=data[k].toUpperCase());
   if(!data.reg)return fail("Registration number is required.");
-  const f=$("u-dl").files[0];if(f&&f.size>10*1024*1024)return fail("Driving licence file is over 10 MB.");
   const btn=$("dlg-save");btn.disabled=true;btn.textContent="Saving…";
   try{const res=await api("save",{row:editing?.row||0,data});
-    if(f){btn.textContent="Uploading…";await api("upload",{row:res.row,field:"dlFile",name:f.name,mime:f.type,data:await b64(f)})}
-    $("dlg").close();toast(editing?"Saved":"Vehicle added. Add Daftar, Insurance and Civil ID from the Dashboard tiles.");await load();
+    $("dlg").close();toast(editing?"Saved":"Vehicle added. Add document dates and files from the Dashboard tiles.");await load();
   }catch(err){fail(err.message)}finally{btn.disabled=false;btn.textContent="Save"}
 });
 
